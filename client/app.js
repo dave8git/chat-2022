@@ -10,7 +10,7 @@ const userName = '';
 loginForm.addEventListener('submit', login);
 
 const login = function (e) {
-    alert('working!');
+    alert('working!'); // should alert, but eventListener not working
     e.preventDefault();
     if(userNameInput.value === '') {
         alert('Please enter some interesting username!')
