@@ -1,3 +1,5 @@
+const socket = io();
+const socket = require('socket.io');
 const loginForm = document.getElementById("welcome-form");
 const messagesSection = document.getElementById("messages-section");
 const messagesList = document.getElementById("messages-list");
@@ -6,8 +8,15 @@ const userNameInput = document.getElementById("username");
 const messageContentInput = document.getElementById("message-content");
 
 let userName = ''; 
+const io = socket(server);
 
+io.on('connection', (socket) => {
+    console.log('New client! Its id – ' + socket.id);
+    socket.on('message', () => { console.log('Oh, I\'ve got something from ' + socket.id) });
+    console.log('I\'ve added a listener on message event \n');
+  });
 
+  
 const login = function (event) {
     alert('working!'); // should alert, but eventListener not working
     event.preventDefault();
@@ -21,12 +30,17 @@ const login = function (event) {
 }
 
 const sendMessage = function (event) {
-    event.preventDefault();
-    if(messageContentInput.value === '') {
-        alert('Please enter some input!');
-    } else {
-        addMessage(userName, messageContentInput.value);
-        messageContentInput.value = '';
+    e.preventDefault();
+
+    let messageContent = messageContentInput.value;
+  
+    if(!messageContent.length) {
+      alert('You have to type something!');
+    }
+    else {
+      addMessage(userName, messageContent);
+      socket.emit('message', { author: userName, content: messageContent })
+      messageContentInput.value = '';
     }
 }
 
@@ -43,5 +57,9 @@ function addMessage(author, content) {
     `;
     messagesList.appendChild(message);
   }
+
 loginForm.addEventListener('submit', login);
 addMessageForm.addEventListener('submit', sendMessage);
+
+
+
